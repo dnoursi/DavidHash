@@ -8,7 +8,8 @@
 // constructor DavidHash(int size)
 // boolean set(key, value)
 // get(key)
-// delete(key)
+// del(key):
+// del() should be delete(), but this isn't possible in cpp
 // float()
 class DavidHash {
     private:
