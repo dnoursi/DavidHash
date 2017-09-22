@@ -21,7 +21,7 @@ class DavidHash {
             for (int i = 0; i < k_size; i++) {
                 ssf +=  (int)k[i];
                 ssf %= size;
-                printf("Hashing integer: ssf is now %d\n", ssf);
+             //   printf("Hashing integer: ssf is now %d\n", ssf);
             }
             return ssf;
         }
@@ -35,12 +35,15 @@ class DavidHash {
         bool set(char* k, int k_size, char* v, bool debug=false) {
             int index = hash(k, k_size);
             if(head[index] != NULL) {
-                fprintf(stderr, "Conflict! New key: %s, Old key: %s, Index: %d", k, head[index], index);
+                fprintf(stderr, "Conflict! New key: %s, Old val: %s, Index: %d\n", k, head[index], index);
                 return false;
+                
             }
+            
             if(debug) {
                 printf("Setting key %s, indexed to %d, to store value %s\n", k, index, v);
             }
+            printf("setting head[index] now\n");
             head[index] = v;
             elems++;
             return true;
@@ -80,17 +83,29 @@ void unitTest(int size) {
     sprintf(value, "what's good?");
  
     hash_table.set(key, key_len-1, value, true);
-
     printf("Having called hash_table.set(), hash_table.get() returns %s\n", hash_table.get(key, key_len-1, true));
-    hash_table.del(key, key_len-1, true);
+
+    sprintf(key, "wow");
+    hash_table.set(key, key_len-1, value, true);
+    printf("Having called hash_table.set(), hash_table.get() returns %s\n", hash_table.get(key, key_len-1, true));
+
+    char* value_2 = (char*) malloc(value_len);
+    memset(value_2, 0, value_len);
+    sprintf(key, "yeh"); //should conflict
+    sprintf(value_2, "poop!! wrong");
+    hash_table.set(key, key_len-1, value_2, true);
+    printf("Having called hash_table.set(), hash_table.get() returns %s\n", hash_table.get(key, key_len-1, true));
     
+    //hash_table.del(key, key_len-1, true);
     printf("After deleting, hash_table.get() returns %s\n", hash_table.get(key, key_len-1, true));
+
+    printf("%f\n", hash_table.load());
 }
 
 int main() {
-    unitTest(10);
+    //unitTest(10);
     unitTest(100);
     unitTest(217);
-    unitTest(1000);
+    //unitTest(1000);
     return 0;
 }
