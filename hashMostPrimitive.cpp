@@ -1,7 +1,7 @@
 
-#include<stdio.h> //printf etc
-#include<stdlib.h> //malloc, free, rand
-#include<string.h>
+#include<stdio.h> // printf etc
+#include<stdlib.h> // malloc, free, rand
+#include<string.h> // memset
 #include<assert.h>
 //using namespace std;
 
@@ -9,23 +9,24 @@
 // constructor DavidHash(int size)
 // boolean set(key, value)
 // get(key)
-// del(key):
-// del() should be delete(), but this isn't possible in cpp
+// del(key) n.b. this should be delete(), but this isn't possible in C++11
 // float()
 class DavidHash {
     private:
         int size;
         int elems;
         char** head;
-        int hash(char* k, int k_size) {
+        int castAddHash(char* k, int k_size) {
             int ssf = 0; // sum so far
             for (int i = 0; i < k_size; i++) {
                 ssf +=  (int)k[i];
                 ssf %= size;
-             //   printf("Hashing integer: ssf is now %d\n", ssf);
             }
             return ssf;
         }
+        // generic hash is hash(char* k, int k_size)
+        // allow choice of hash function with macro:
+#define hash castAddHash
     public:
         DavidHash(int s) {
             head = (char**) malloc(sizeof(int*) * s);
@@ -34,17 +35,20 @@ class DavidHash {
             elems = 0;
         }
         bool set(char* k, int k_size, char* v, bool debug=false) {
+ 
+            if ((k == NULL) || (k_size == 0)) {
+                return false;
+            }
             int index = hash(k, k_size);
             if(head[index] != NULL) {
                 fprintf(stderr, "Conflict! New key: %s, Old val: %s, Index: %d\n", k, head[index], index);
-                return false;
-                
+                return false;   
             }
             
             if(debug) {
                 printf("Setting key %s, indexed to %d, to store value %s\n", k, index, v);
             }
-            printf("setting head[index] now\n");
+            
             head[index] = v;
             elems++;
             return true;
@@ -58,12 +62,16 @@ class DavidHash {
         }
         char* del(char* k, int k_size, bool debug=false) {
             int index = hash(k, k_size);
+            
             if(debug) {
                 printf("Deleting value for key %s indexed to %d\n", k, index);
             }
+
             char* deleted = head[index];
-            head[index] = NULL;
-            elems--;
+            if (deleted != NULL) {
+                elems--;
+                head[index] = NULL;
+            }
             return deleted;
         }
         float load() {
@@ -102,10 +110,10 @@ void unitTest(int size) {
     hash_table.set(key, key_len-1, value_2, true);
     printf("Having called hash_table.set(), hash_table.get() returns %s\n", hash_table.get(key, key_len-1, true));
     
-    //hash_table.del(key, key_len-1, true);
+    hash_table.del(key, key_len-1, true);
     printf("After deleting, hash_table.get() returns %s\n", hash_table.get(key, key_len-1, true));
 
-    printf("%f\n", hash_table.load());
+    printf("Load is: %f\n", hash_table.load());
 }
 
 int main() {
