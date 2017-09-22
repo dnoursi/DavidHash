@@ -2,6 +2,7 @@
 #include<stdio.h> //printf etc
 #include<stdlib.h> //malloc, free, rand
 #include<string.h>
+#include<assert.h>
 //using namespace std;
 
 // API:
@@ -55,16 +56,21 @@ class DavidHash {
             }
             return head[index];
         }
-        void del(char* k, int k_size, bool debug=false) {
+        char* del(char* k, int k_size, bool debug=false) {
             int index = hash(k, k_size);
             if(debug) {
                 printf("Deleting value for key %s indexed to %d\n", k, index);
             }
+            char* deleted = head[index];
             head[index] = NULL;
             elems--;
+            return deleted;
         }
         float load() {
-            return ((float)elems)/((float)size);
+            float ratio = ((float)elems)/((float)size);
+ 
+            assert(ratio <= 1);
+            return ratio;
         }
 };
 
